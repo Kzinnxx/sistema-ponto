@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PointSys Tecnologia</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- TELA 1: AUTH -->
+  <div class="tela" id="tela-auth">
+    <div class="auth-wrapper">
+
+      <div class="painel-esquerdo">
+        <div class="marca">
+          <div class="marca-icone">⏱️</div>
+          <div class="marca-texto">
+            <h1>POINTSYS</h1>
+            <p>Tecnologia</p>
+          </div>
+        </div>
+        <div class="painel-esquerdo-conteudo">
+          <div class="divisor"></div>
+          <h2>Bem-vindo ao Portal de Ponto</h2>
+          <p>Acesse sua conta para registrar seu ponto e consultar seu histórico de forma rápida e segura.</p>
+        </div>
+        <p style="font-size:11px; color:#4a6a8a;">© 2026 PointSys Tecnologia</p>
+      </div>
+
+      <div class="painel-direito">
+        <div class="idioma">🌐 Português</div>
+        <div class="avatar-icone">👤</div>
+        <div class="form-titulo">
+          <h2>Acesse sua conta</h2>
+          <p>Informe seus dados para entrar</p>
+        </div>
+
+        <div class="abas">
+          <div class="aba ativa" id="aba-login" onclick="trocarAba('login')">Entrar</div>
+          <div class="aba" id="aba-cadastro" onclick="trocarAba('cadastro')">Cadastrar</div>
+        </div>
+
+        <div id="form-login">
+          <label>E-mail corporativo</label>
+          <div class="input-wrapper">
+            <span>✉️</span>
+            <input id="login-email" type="email" placeholder="seu.nome@empresa.com.br">
+          </div>
+          <label>Senha</label>
+          <div class="input-wrapper">
+            <span>🔒</span>
+            <input id="login-senha" type="password" placeholder="Digite sua senha">
+          </div>
+          <div class="esqueceu"><a href="#">Esqueceu sua senha?</a></div>
+          <button class="btn-principal" onclick="login()">Entrar</button>
+          <div class="ou">ou</div>
+          <button class="btn-secundario" onclick="trocarAba('cadastro')">🔑 Criar nova conta</button>
+          <div class="mensagem" id="msg-login"></div>
+        </div>
+
+        <div id="form-cadastro" style="display:none">
+          <label>Nome completo</label>
+          <div class="input-wrapper">
+            <span>👤</span>
+            <input id="cad-nome" type="text" placeholder="João Silva">
+          </div>
+          <label>E-mail corporativo</label>
+          <div class="input-wrapper">
+            <span>✉️</span>
+            <input id="cad-email" type="email" placeholder="seu.nome@empresa.com.br">
+          </div>
+          <label>Senha</label>
+          <div class="input-wrapper">
+            <span>🔒</span>
+            <input id="cad-senha" type="password" placeholder="Digite sua senha">
+          </div>
+          <button class="btn-principal" onclick="cadastrar()">Criar conta</button>
+          <div class="ou">ou</div>
+          <button class="btn-secundario" onclick="trocarAba('login')">← Voltar para o login</button>
+          <div class="mensagem" id="msg-cadastro"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rodape">
+      <span>🛡️ Sua segurança é importante para nós.</span>
+      <span>© 2026 PointSys Tecnologia. Todos os direitos reservados.</span>
+    </div>
+  </div>
+
+  <!-- TELA BIOMETRIA -->
+  <div class="tela" id="tela-biometria">
+    <div class="auth-wrapper">
+      <div class="painel-esquerdo">
+        <div class="marca">
+          <div class="marca-icone">⏱️</div>
+          <div class="marca-texto">
+            <h1>POINTSYS</h1>
+            <p>Tecnologia</p>
+          </div>
+        </div>
+        <div class="painel-esquerdo-conteudo">
+          <div class="divisor"></div>
+          <h2>Verificação Biométrica</h2>
+          <p>Confirme sua identidade usando a biometria do seu dispositivo para continuar com segurança.</p>
+        </div>
+        <p style="font-size:11px; color:#4a6a8a;">© 2026 PointSys Tecnologia</p>
+      </div>
+
+      <div class="painel-direito" style="align-items:center; text-align:center;">
+        <div class="idioma">🌐 Português</div>
+
+        <div style="font-size:72px; margin-bottom:24px;">👆</div>
+
+        <div class="form-titulo">
+          <h2 id="bio-titulo">Confirme sua identidade</h2>
+          <p id="bio-subtitulo">Use a biometria do seu dispositivo para continuar</p>
+        </div>
+
+        <div style="margin-top:32px; width:100%;">
+          <button class="btn-principal" id="btn-biometria" onclick="executarBiometria()">
+            👆 Verificar com Biometria
+          </button>
+          <div class="mensagem" id="msg-biometria"></div>
+        </div>
+
+        <p style="margin-top:24px; font-size:13px; color:#8a7f72;">
+          Sua digital ou rosto nunca sai do dispositivo
+        </p>
+      </div>
+    </div>
+
+    <div class="rodape">
+      <span>🛡️ Sua segurança é importante para nós.</span>
+      <span>© 2026 PointSys Tecnologia. Todos os direitos reservados.</span>
+    </div>
+  </div>
+
+  <!-- TELA 2: PONTO -->
+  <div class="tela" id="tela-ponto">
+    <div class="ponto-wrapper">
+
+      <div class="ponto-esquerdo">
+        <div class="ponto-esquerdo-topo">
+          <div class="marca">
+            <div class="marca-icone">⏱️</div>
+            <div class="marca-texto">
+              <h1>POINTSYS</h1>
+              <p>Tecnologia</p>
+            </div>
+          </div>
+          <button class="btn-sair" onclick="sair()">↩ Sair</button>
+        </div>
+
+        <div class="usuario-info" style="margin-top: 32px;">
+          <div class="usuario-avatar">👤</div>
+          <h2 id="nome-usuario">Olá!</h2>
+          <p id="cargo-usuario">Funcionário</p>
+          <div class="relogio">
+            <div class="relogio-hora" id="relogio-hora">00:00:00</div>
+            <div class="relogio-data" id="relogio-data"></div>
+          </div>
+        </div>
+
+        <div style="flex: 1;"></div>
+        <p style="font-size:11px; color:#4a6a8a;">© 2026 PointSys Tecnologia</p>
+      </div>
+
+      <div class="ponto-direito">
+        <div class="ponto-direito-titulo">
+          <h3>Registrar Ponto</h3>
+          <p>Selecione o tipo de registro para continuar</p>
+        </div>
+
+        <div class="botoes-ponto">
+          <button class="btn-entrada" onclick="registrarPonto('entrada')">
+            <span class="btn-icone">✅</span>
+            <span class="btn-label">Registrar Entrada</span>
+            <span class="btn-sub">Início do expediente</span>
+          </button>
+          <button class="btn-saida" onclick="registrarPonto('saida')">
+            <span class="btn-icone">🚪</span>
+            <span class="btn-label">Registrar Saída</span>
+            <span class="btn-sub">Fim do expediente</span>
+          </button>
+        </div>
+
+        <div class="mensagem" id="msg-ponto"></div>
+
+        <div class="historico-secao">
+          <div class="historico-header">
+            <h4>📋 Últimos registros</h4>
+            <button class="btn-atualizar" onclick="verHistorico()">🔄 Atualizar</button>
+          </div>
+          <div id="lista-historico">
+            <div class="mensagem info" style="display:block">Nenhum registro encontrado.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rodape">
+      <span>🛡️ Sua segurança é importante para nós.</span>
+      <span>© 2026 PointSys Tecnologia. Todos os direitos reservados.</span>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@simplewebauthn/browser@7.4.0/dist/bundle/index.umd.min.js"></script>
+
+  <script>
+    const { startRegistration, startAuthentication } = SimpleWebAuthnBrowser
+
+    let tokenAtual = null
+    let funcionarioAtual = null
+    let modoBiometria = null
+
+    document.getElementById('tela-auth').classList.add('ativa')
+    document.getElementById('tela-ponto').classList.remove('ativa')
+    document.getElementById('tela-biometria').classList.remove('ativa')
+
+    function atualizarRelogio() {
+      const agora = new Date()
+      document.getElementById('relogio-hora').textContent = agora.toLocaleTimeString('pt-br', {
+        timeZone: 'America/Sao_Paulo'
+      })
+      document.getElementById('relogio-data').textContent = agora.toLocaleDateString('pt-br', {
+        weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
+        timeZone: 'America/Sao_Paulo'
+      })
+    }
+    setInterval(atualizarRelogio, 1000)
+    atualizarRelogio()
+
+    function mostrarTela(id) {
+      document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'))
+      document.getElementById(id).classList.add('ativa')
+    }
+
+    function trocarAba(aba) {
+      document.getElementById('form-login').style.display = aba === 'login' ? 'block' : 'none'
+      document.getElementById('form-cadastro').style.display = aba === 'cadastro' ? 'block' : 'none'
+      document.getElementById('aba-login').className = 'aba' + (aba === 'login' ? ' ativa' : '')
+      document.getElementById('aba-cadastro').className = 'aba' + (aba === 'cadastro' ? ' ativa' : '')
+      document.getElementById('msg-login').style.display = 'none'
+      document.getElementById('msg-cadastro').style.display = 'none'
+    }
+
+    function mostrar(id, texto, tipo) {
+      const el = document.getElementById(id)
+      el.className = 'mensagem ' + tipo
+      el.textContent = texto
+      el.style.display = 'block'
+    }
+
+    function irParaBiometria(modo, funcionario) {
+      funcionarioAtual = funcionario
+      modoBiometria = modo
+      if (modo === 'cadastro') {
+        document.getElementById('bio-titulo').textContent = 'Cadastrar Biometria'
+        document.getElementById('bio-subtitulo').textContent = 'Cadastre sua biometria para acessos futuros'
+        document.getElementById('btn-biometria').textContent = '👆 Cadastrar Biometria'
+      } else {
+        document.getElementById('bio-titulo').textContent = 'Confirme sua identidade'
+        document.getElementById('bio-subtitulo').textContent = 'Use a biometria para confirmar seu acesso'
+        document.getElementById('btn-biometria').textContent = '👆 Verificar com Biometria'
+      }
+      document.getElementById('msg-biometria').style.display = 'none'
+      mostrarTela('tela-biometria')
+    }
+
+    function irParaPonto(nome) {
+      document.getElementById('nome-usuario').textContent = nome
+      mostrarTela('tela-ponto')
+      verHistorico()
+    }
+
+    function sair() {
+      tokenAtual = null
+      funcionarioAtual = null
+      document.getElementById('login-email').value = ''
+      document.getElementById('login-senha').value = ''
+      mostrarTela('tela-auth')
+      trocarAba('login')
+    }
+
+    async function cadastrar() {
+      const nome = document.getElementById('cad-nome').value.trim()
+      const email = document.getElementById('cad-email').value.trim()
+      const senha = document.getElementById('cad-senha').value
+      if (!nome || !email || !senha) {
+        mostrar('msg-cadastro', '⚠️ Preencha todos os campos!', 'erro')
+        return
+      }
+      try {
+        const resposta = await fetch('http://localhost:3001/auth/cadastro', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome, email, senha })
+        })
+        const dados = await resposta.json()
+        if (dados.erro) {
+          mostrar('msg-cadastro', '❌ ' + dados.erro, 'erro')
+        } else {
+          mostrar('msg-cadastro', '✅ Conta criada! Cadastrando biometria...', 'sucesso')
+          setTimeout(() => irParaBiometria('cadastro', dados.funcionario), 1500)
+        }
+      } catch {
+        mostrar('msg-cadastro', '❌ Erro ao conectar com o servidor', 'erro')
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById('login-email').value.trim()
+      const senha = document.getElementById('login-senha').value
+      if (!email || !senha) {
+        mostrar('msg-login', '⚠️ Preencha todos os campos!', 'erro')
+        return
+      }
+      try {
+        const resposta = await fetch('http://localhost:3001/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, senha })
+        })
+        const dados = await resposta.json()
+        if (dados.erro) {
+          mostrar('msg-login', '❌ ' + dados.erro, 'erro')
+        } else {
+          tokenAtual = dados.token
+          irParaBiometria('login', dados.funcionario)
+        }
+      } catch {
+        mostrar('msg-login', '❌ Erro ao conectar com o servidor', 'erro')
+      }
+    }
+
+    async function executarBiometria() {
+      if (!funcionarioAtual) return
+      try {
+        if (modoBiometria === 'cadastro') {
+          mostrar('msg-biometria', '⏳ Preparando cadastro biométrico...', 'info')
+          const opcoesResposta = await fetch('http://localhost:3001/auth/webauthn/cadastro-opcoes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ funcionario_id: funcionarioAtual.id })
+          })
+          const opcoes = await opcoesResposta.json()
+          const respostaBio = await startRegistration(opcoes)
+          const verificacao = await fetch('http://localhost:3001/auth/webauthn/cadastro-verificar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              funcionario_id: funcionarioAtual.id,
+              resposta: respostaBio
+            })
+          })
+          const resultado = await verificacao.json()
+          if (resultado.erro) {
+            mostrar('msg-biometria', '❌ ' + resultado.erro, 'erro')
+          } else {
+            mostrar('msg-biometria', '✅ Biometria cadastrada! Redirecionando para o login...', 'sucesso')
+            setTimeout(() => {
+              mostrarTela('tela-auth')
+              trocarAba('login')
+            }, 2000)
+          }
+        } else {
+          mostrar('msg-biometria', '⏳ Verificando biometria...', 'info')
+          const opcoesResposta = await fetch('http://localhost:3001/auth/webauthn/login-opcoes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ funcionario_id: funcionarioAtual.id })
+          })
+          const opcoes = await opcoesResposta.json()
+          const respostaBio = await startAuthentication(opcoes)
+          const verificacao = await fetch('http://localhost:3001/auth/webauthn/login-verificar', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              funcionario_id: funcionarioAtual.id,
+              resposta: respostaBio
+            })
+          })
+          const resultado = await verificacao.json()
+          if (resultado.erro) {
+            mostrar('msg-biometria', '❌ ' + resultado.erro, 'erro')
+          } else {
+            tokenAtual = resultado.token
+            mostrar('msg-biometria', '✅ Identidade confirmada!', 'sucesso')
+            setTimeout(() => irParaPonto(resultado.funcionario.nome), 1000)
+          }
+        }
+      } catch (erro) {
+        console.error('Erro completo:', erro)
+        mostrar('msg-biometria', '❌ Erro na biometria: ' + erro.message, 'erro')
+      }
+    }
+
+    async function registrarPonto(tipo) {
+      try {
+        const resposta = await fetch('http://localhost:3002/ponto/registrar', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + tokenAtual
+          },
+          body: JSON.stringify({ tipo })
+        })
+        const dados = await resposta.json()
+        if (dados.erro) {
+          mostrar('msg-ponto', '❌ ' + dados.erro, 'erro')
+        } else {
+          const hora = new Date().toLocaleTimeString('pt-br', { timeZone: 'America/Sao_Paulo' })
+          const emoji = tipo === 'entrada' ? '✅' : '🚪'
+          mostrar('msg-ponto', emoji + ' Ponto de ' + tipo + ' registrado às ' + hora + '!', 'sucesso')
+          setTimeout(verHistorico, 1000)
+        }
+      } catch {
+        mostrar('msg-ponto', '❌ Erro ao conectar com o servidor', 'erro')
+      }
+    }
+
+    async function verHistorico() {
+      try {
+        const resposta = await fetch('http://localhost:3002/ponto/historico', {
+          headers: { 'Authorization': 'Bearer ' + tokenAtual }
+        })
+        const dados = await resposta.json()
+        const el = document.getElementById('lista-historico')
+        if (!dados.registros || dados.registros.length === 0) {
+          el.innerHTML = '<div class="mensagem info" style="display:block">Nenhum registro encontrado.</div>'
+          return
+        }
+        el.innerHTML = dados.registros.map(r => {
+          const dataUTC = new Date(r.horario)
+          dataUTC.setHours(dataUTC.getHours() - 3)
+          const hora = dataUTC.toLocaleTimeString('pt-br')
+          const data = dataUTC.toLocaleDateString('pt-br')
+          const emoji = r.tipo === 'entrada' ? '✅' : '🚪'
+          const badge = r.tipo === 'entrada' ? 'badge-entrada' : 'badge-saida'
+          return `<div class="historico-item ${r.tipo}">
+            <div class="historico-item-esquerdo">
+              <div class="historico-badge ${badge}">${emoji}</div>
+              <div>
+                <div class="historico-tipo">${r.tipo.toUpperCase()}</div>
+                <div class="historico-sub">${data}</div>
+              </div>
+            </div>
+            <div class="historico-hora">${hora}</div>
+          </div>`
+        }).join('')
+      } catch {
+        console.error('Erro ao buscar histórico')
+      }
+    }
+  </script>
+</body>
+</html>

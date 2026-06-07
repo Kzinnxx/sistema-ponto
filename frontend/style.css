@@ -1,0 +1,553 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f0ebe0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ======= TELAS ======= */
+.tela { display: none; flex: 1; }
+.tela.ativa { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ======= TELA AUTH ======= */
+.auth-wrapper {
+  display: flex;
+  flex: 1;
+}
+
+.painel-esquerdo {
+  width: 42%;
+  background: #0a2342;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 44px;
+  position: relative;
+  overflow: hidden;
+}
+
+.painel-esquerdo::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(160deg, #0d2e57 0%, #061828 100%);
+  opacity: 0.7;
+  z-index: 0;
+}
+
+.painel-esquerdo > * { position: relative; z-index: 1; }
+
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.marca-icone {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #c9a84c, #e8c97a);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+
+.marca-texto h1 {
+  font-size: 20px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.marca-texto p {
+  font-size: 10px;
+  color: #c9a84c;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+.painel-esquerdo-conteudo h2 {
+  font-size: 28px;
+  color: #ffffff;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 16px;
+}
+
+.painel-esquerdo-conteudo p {
+  font-size: 14px;
+  color: #a8bdd4;
+  line-height: 1.7;
+}
+
+.divisor {
+  width: 40px;
+  height: 2px;
+  background: #c9a84c;
+  margin-bottom: 20px;
+}
+
+.painel-direito {
+  flex: 1;
+  background: #f0ebe0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 64px;
+  position: relative;
+}
+
+.idioma {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  font-size: 13px;
+  color: #8a7f72;
+}
+
+.avatar-icone {
+  width: 64px;
+  height: 64px;
+  background: #e4ddd0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin: 0 auto 24px;
+}
+
+.form-titulo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.form-titulo h2 {
+  font-size: 26px;
+  color: #0a2342;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.form-titulo p {
+  font-size: 14px;
+  color: #8a7f72;
+}
+
+.abas {
+  display: flex;
+  margin-bottom: 28px;
+  border-bottom: 2px solid #e0d9ce;
+}
+
+.aba {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #8a7f72;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.aba.ativa {
+  color: #0a2342;
+  border-bottom: 2px solid #0a2342;
+  font-weight: 700;
+}
+
+label {
+  font-size: 13px;
+  color: #4a4035;
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.input-wrapper {
+  position: relative;
+  margin-bottom: 18px;
+}
+
+.input-wrapper span {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #8a7f72;
+}
+
+input {
+  width: 100%;
+  padding: 13px 14px 13px 42px;
+  border: 1.5px solid #e0d9ce;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  background: #fdfcfa;
+  color: #1a1a2e;
+  transition: border 0.2s;
+}
+
+input:focus { border-color: #0a2342; background: #fff; }
+
+.esqueceu {
+  text-align: right;
+  margin-top: -10px;
+  margin-bottom: 20px;
+}
+
+.esqueceu a {
+  font-size: 13px;
+  color: #0a2342;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.esqueceu a:hover { text-decoration: underline; }
+
+.ou {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: #8a7f72;
+  font-size: 13px;
+}
+
+.ou::before, .ou::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e0d9ce;
+}
+
+/* ======= BOTÕES ======= */
+button.btn-principal {
+  width: 100%;
+  padding: 15px;
+  background: #0a2342;
+  color: #f0ebe0;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+button.btn-principal:hover { background: #0d2e57; }
+
+button.btn-secundario {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  color: #0a2342;
+  border: 1.5px solid #0a2342;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+button.btn-secundario:hover { background: #e4ddd0; }
+
+button.btn-sair {
+  background: none;
+  border: 1.5px solid #e0d9ce;
+  color: #8a7f72;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+button.btn-sair:hover { background: #f5f0e8; color: #0a2342; }
+
+/* ======= MENSAGENS ======= */
+.mensagem {
+  padding: 12px 14px;
+  border-radius: 8px;
+  margin-top: 14px;
+  font-size: 14px;
+  display: none;
+}
+
+.sucesso { background: #eaf4ee; color: #1e6b3a; border: 1.5px solid #b6dfc4; }
+.erro { background: #fdf0ee; color: #9b2c1a; border: 1.5px solid #f0b8ae; }
+.info { background: #eef4fb; color: #1a4a7a; border: 1.5px solid #b0cff0; }
+
+/* ======= RODAPÉ ======= */
+.rodape {
+  background: #f0ebe0;
+  border-top: 1px solid #e0d9ce;
+  padding: 14px 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #8a7f72;
+}
+
+/* ======= TELA PONTO ======= */
+.ponto-wrapper {
+  flex: 1;
+  display: flex;
+  min-height: calc(100vh - 50px);
+}
+
+.ponto-esquerdo {
+  width: 42%;
+  background: #0a2342;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 44px;
+  position: relative;
+  overflow: hidden;
+}
+
+.ponto-esquerdo::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(160deg, #0d2e57 0%, #061828 100%);
+  opacity: 0.7;
+  z-index: 0;
+}
+
+.ponto-esquerdo > * { position: relative; z-index: 1; }
+
+.ponto-esquerdo-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.usuario-info {
+  margin-top: auto;
+}
+
+.usuario-avatar {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #c9a84c, #e8c97a);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 14px;
+}
+
+.usuario-info h2 {
+  font-size: 22px;
+  color: #ffffff;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.usuario-info p {
+  font-size: 13px;
+  color: #a8bdd4;
+}
+
+.relogio {
+  margin-top: 24px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+
+.relogio-hora {
+  font-size: 36px;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.relogio-data {
+  font-size: 13px;
+  color: #a8bdd4;
+  margin-top: 4px;
+  text-transform: capitalize;
+}
+
+.ponto-direito {
+  flex: 1;
+  background: #f0ebe0;
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.ponto-direito-titulo {
+  margin-bottom: 28px;
+}
+
+.ponto-direito-titulo h3 {
+  font-size: 20px;
+  color: #0a2342;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.ponto-direito-titulo p {
+  font-size: 13px;
+  color: #8a7f72;
+}
+
+.botoes-ponto {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.botoes-ponto button {
+  flex: 1;
+  padding: 22px 12px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-entrada {
+  background: #eaf4ee;
+  color: #1e6b3a;
+  border: 1.5px solid #b6dfc4;
+}
+
+.btn-entrada:hover { background: #d4ecdb; transform: translateY(-2px); }
+
+.btn-saida {
+  background: #fdf0ee;
+  color: #9b2c1a;
+  border: 1.5px solid #f0b8ae;
+}
+
+.btn-saida:hover { background: #fae0db; transform: translateY(-2px); }
+
+.btn-icone { font-size: 24px; }
+.btn-label { font-size: 15px; }
+.btn-sub { font-size: 11px; font-weight: 400; opacity: 0.7; }
+
+.historico-secao {
+  flex: 1;
+}
+
+.historico-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.historico-header h4 {
+  font-size: 13px;
+  color: #4a4035;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-atualizar {
+  background: none;
+  border: 1.5px solid #e0d9ce;
+  color: #8a7f72;
+  padding: 6px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-atualizar:hover { background: #e4ddd0; color: #0a2342; }
+
+.historico-item {
+  background: #ffffff;
+  border: 1.5px solid #f0ebe0;
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 8px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: box-shadow 0.2s;
+}
+
+.historico-item:hover { box-shadow: 0 2px 12px rgba(10,35,66,0.07); }
+.historico-item.entrada { border-left: 4px solid #2e9e5b; }
+.historico-item.saida { border-left: 4px solid #d04a2e; }
+
+.historico-item-esquerdo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.historico-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.badge-entrada { background: #eaf4ee; }
+.badge-saida { background: #fdf0ee; }
+
+.historico-tipo {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0a2342;
+}
+
+.historico-sub {
+  font-size: 12px;
+  color: #8a7f72;
+  margin-top: 2px;
+}
+
+.historico-hora {
+  font-size: 13px;
+  color: #8a7f72;
+  font-weight: 500;
+}
+
+@media (max-width: 700px) {
+  .painel-esquerdo { display: none; }
+  .painel-direito { padding: 40px 28px; }
+  .ponto-esquerdo { display: none; }
+  .ponto-direito { padding: 28px 20px; }
+  .rodape { padding: 14px 20px; flex-direction: column; gap: 6px; text-align: center; }
+  .botoes-ponto { flex-direction: column; }
+}
