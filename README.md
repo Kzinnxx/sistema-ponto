@@ -16,7 +16,9 @@ Sistema distribuído de controle de ponto com autenticação biométrica via Web
 Frontend Web
 ↓
 Auth Service (porta 3001)
+
 Ponto Service (porta 3002)
+
 Log Service (porta 3003)
 ↓
 RabbitMQ → Worker → PostgreSQL
