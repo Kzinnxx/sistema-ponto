@@ -11,6 +11,7 @@ app.use(cors())
 app.use(express.json())
 
 let canalRabbit = null
+let canalLogs = null
 
 const conectarRabbit = async () => {
   try {
@@ -25,7 +26,31 @@ const conectarRabbit = async () => {
   }
 }
 
+const conectarLogs = async () => {
+  try {
+    const conexao = await amqp.connect('amqp://admin:senha123@127.0.0.1:5672')
+    const canal = await conexao.createChannel()
+    await canal.assertQueue('fila_logs', { durable: true })
+    canalLogs = canal
+    console.log('Ponto Service conectado à fila de logs!')
+  } catch (erro) {
+    console.error('Erro ao conectar fila de logs:', erro.message)
+    setTimeout(conectarLogs, 5000)
+  }
+}
+
 conectarRabbit()
+conectarLogs()
+
+const enviarLog = (tipo, mensagem, dados = {}) => {
+  if (canalLogs) {
+    canalLogs.sendToQueue(
+      'fila_logs',
+      Buffer.from(JSON.stringify({ servico: 'ponto-service', tipo, mensagem, dados })),
+      { persistent: true }
+    )
+  }
+}
 
 const verificarToken = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1]
@@ -67,11 +92,14 @@ app.post('/ponto/registrar', verificarToken, async (req, res) => {
         Buffer.from(JSON.stringify(registro)),
         { persistent: true }
       )
+      enviarLog('info', `Ponto registrado: ${tipo} para funcionario_id: ${req.funcionario.id}`, registro)
       res.json({ mensagem: 'Ponto registrado na fila com sucesso!', registro })
     } else {
+      enviarLog('erro', 'Fila de ponto não disponível')
       res.status(503).json({ erro: 'Fila não disponível' })
     }
   } catch (erro) {
+    enviarLog('erro', `Erro ao registrar ponto: ${erro.message}`)
     res.status(500).json({ erro: 'Erro ao registrar ponto' })
   }
 })
@@ -85,6 +113,7 @@ app.get('/ponto/historico', verificarToken, async (req, res) => {
     )
     res.json({ registros: resultado.rows })
   } catch (erro) {
+    enviarLog('erro', `Erro ao buscar historico: ${erro.message}`)
     res.status(500).json({ erro: 'Erro ao buscar histórico' })
   }
 })

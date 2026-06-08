@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PointSys — Logs do Sistema</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .topo-nav {
+      background: #0a2342;
+      padding: 14px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topo-nav-marca {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .topo-nav-links a {
+      color: #a8bdd4;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-left: 20px;
+      transition: color 0.2s;
+    }
+
+    .topo-nav-links a:hover { color: #fff; }
+    .topo-nav-links a.ativo { color: #c9a84c; }
+
+    .logs-wrapper {
+      padding: 40px 48px;
+      min-height: 100vh;
+      background: #f0ebe0;
+    }
+
+    .logs-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .logs-header h1 {
+      font-size: 22px;
+      color: #0a2342;
+      font-weight: 700;
+    }
+
+    .logs-header p {
+      font-size: 13px;
+      color: #8a7f72;
+      margin-top: 4px;
+    }
+
+    .btn-atualizar-logs {
+      padding: 10px 20px;
+      background: #0a2342;
+      color: #f0ebe0;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-atualizar-logs:hover { background: #0d2e57; }
+
+    .tabela-wrapper {
+      background: #fff;
+      border-radius: 14px;
+      border: 1.5px solid #f0ebe0;
+      overflow: hidden;
+    }
+
+    .tabela-header {
+      display: grid;
+      grid-template-columns: 1fr 1fr 120px 120px 160px;
+      padding: 12px 20px;
+      background: #f5f0e8;
+      font-size: 11px;
+      font-weight: 700;
+      color: #8a7f72;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-bottom: 1.5px solid #f0ebe0;
+    }
+
+    .log-item {
+      display: grid;
+      grid-template-columns: 1fr 1fr 120px 120px 160px;
+      padding: 14px 20px;
+      border-bottom: 1px solid #f5f0e8;
+      font-size: 13px;
+      align-items: center;
+      transition: background 0.15s;
+    }
+
+    .log-item:hover { background: #fdfcfa; }
+    .log-item:last-child { border-bottom: none; }
+
+    .nome { font-weight: 600; color: #0a2342; }
+    .email { color: #8a7f72; font-size: 12px; }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .badge-entrada { background: #eaf4ee; color: #1e6b3a; }
+    .badge-saida { background: #fdf0ee; color: #9b2c1a; }
+    .badge-login { background: #eef4fb; color: #1a4a7a; }
+    .badge-bio-sim { background: #f0eef8; color: #4a2a8a; }
+    .badge-bio-nao { background: #f5f0e8; color: #8a7f72; }
+
+    .hora { color: #0a2342; font-weight: 500; }
+    .data { color: #8a7f72; font-size: 12px; margin-top: 2px; }
+
+    .vazio {
+      padding: 48px;
+      text-align: center;
+      color: #8a7f72;
+      font-size: 14px;
+    }
+
+    .rodape {
+      background: #f0ebe0;
+      border-top: 1px solid #e0d9ce;
+      padding: 14px 48px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #8a7f72;
+    }
+
+    @media (max-width: 700px) {
+      .logs-wrapper { padding: 20px 16px; }
+      .tabela-header { display: none; }
+      .log-item { grid-template-columns: 1fr; gap: 6px; padding: 14px 16px; }
+      .topo-nav { padding: 14px 20px; }
+      .rodape { flex-direction: column; gap: 6px; padding: 14px 20px; }
+    }
+  </style>
+</head>
+<body style="margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#f0ebe0;">
+
+  <nav class="topo-nav">
+    <div class="topo-nav-marca">
+      ⏱️ POINTSYS Tecnologia
+    </div>
+    <div class="topo-nav-links">
+      <a href="index.html">🏠 Portal</a>
+      <a href="logs.html" class="ativo">📋 Logs</a>
+    </div>
+  </nav>
+
+  <div class="logs-wrapper">
+    <div class="logs-header">
+      <div>
+        <h1>📋 Registros do Sistema</h1>
+        <p>Histórico de logins, pontos e biometria</p>
+      </div>
+      <button class="btn-atualizar-logs" onclick="carregarLogs()">🔄 Atualizar</button>
+    </div>
+
+    <div class="tabela-wrapper">
+      <div class="tabela-header">
+        <span>Funcionário</span>
+        <span>Email</span>
+        <span>Tipo</span>
+        <span>Biometria</span>
+        <span>Horário</span>
+      </div>
+      <div id="lista-logs">
+        <div class="vazio">Carregando...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rodape">
+    <span>🛡️ Sua segurança é importante para nós.</span>
+    <span>© 2026 PointSys Tecnologia. Todos os direitos reservados.</span>
+  </div>
+
+  <script>
+    async function carregarLogs() {
+      try {
+        const [resLogs, resFuncionarios] = await Promise.all([
+          fetch('http://localhost:3003/logs'),
+          fetch('http://localhost:3001/auth/funcionarios')
+        ])
+
+        const dadosLogs = await resLogs.json()
+        const dadosFuncionarios = await resFuncionarios.json()
+
+        const mapFuncionarios = {}
+        if (dadosFuncionarios.funcionarios) {
+          dadosFuncionarios.funcionarios.forEach(f => {
+            mapFuncionarios[f.id] = f
+          })
+        }
+
+        const logs = dadosLogs.logs
+        const el = document.getElementById('lista-logs')
+
+        if (logs.length === 0) {
+          el.innerHTML = '<div class="vazio">Nenhum registro encontrado.</div>'
+          return
+        }
+
+        el.innerHTML = logs.map(log => {
+          const dados = log.dados || {}
+          const funcionarioId = dados.id || dados.funcionario_id
+          const funcionario = mapFuncionarios[funcionarioId] || {}
+          const nome = funcionario.nome || '—'
+          const email = funcionario.email || dados.email || '—'
+
+          const d = new Date(log.criado_em)
+          d.setHours(d.getHours() - 3)
+          const hora = d.toLocaleTimeString('pt-br')
+          const data = d.toLocaleDateString('pt-br')
+
+          let tipoBadge = ''
+          let tipoTexto = ''
+
+          if (log.mensagem.includes('entrada')) {
+            tipoBadge = 'badge-entrada'
+            tipoTexto = '✅ Entrada'
+          } else if (log.mensagem.includes('saida') || log.mensagem.includes('saída')) {
+            tipoBadge = 'badge-saida'
+            tipoTexto = '🚪 Saída'
+          } else if (log.mensagem.includes('Login') || log.mensagem.includes('login')) {
+            tipoBadge = 'badge-login'
+            tipoTexto = '🔐 Login'
+          } else if (log.mensagem.includes('Biometria cadastrada')) {
+            tipoBadge = 'badge-bio-sim'
+            tipoTexto = '👆 Cadastro'
+          } else {
+            tipoBadge = 'badge-login'
+            tipoTexto = '📌 Evento'
+          }
+
+          let biometriaBadge = ''
+          if (log.mensagem.includes('biometrico') || log.mensagem.includes('Biometria cadastrada')) {
+            biometriaBadge = '<span class="badge badge-bio-sim">👆 Sim</span>'
+          } else if (log.mensagem.includes('Login') || log.mensagem.includes('entrada') || log.mensagem.includes('saida')) {
+            biometriaBadge = '<span class="badge badge-bio-nao">— Pulou</span>'
+          } else {
+            biometriaBadge = '<span style="color:#8a7f72;font-size:12px;">—</span>'
+          }
+
+          return `<div class="log-item">
+            <span class="nome">${nome}</span>
+            <span class="email">${email}</span>
+            <span><span class="badge ${tipoBadge}">${tipoTexto}</span></span>
+            <span>${biometriaBadge}</span>
+            <div>
+              <div class="hora">${hora}</div>
+              <div class="data">${data}</div>
+            </div>
+          </div>`
+        }).join('')
+
+      } catch (erro) {
+        document.getElementById('lista-logs').innerHTML = '<div class="vazio">❌ Erro ao conectar com o servidor.</div>'
+      }
+    }
+
+    carregarLogs()
+    setInterval(carregarLogs, 10000)
+  </script>
+</body>
+</html>
