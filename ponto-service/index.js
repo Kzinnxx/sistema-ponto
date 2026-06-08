@@ -118,6 +118,62 @@ app.get('/ponto/historico', verificarToken, async (req, res) => {
   }
 })
 
+app.get('/dashboard/resumo', async (req, res) => {
+  try {
+    const pool = require('./database')
+
+    const totalRegistros = await pool.query(
+      'SELECT COUNT(*) FROM registros_ponto'
+    )
+
+    const funcionariosHoje = await pool.query(`
+      SELECT COUNT(DISTINCT funcionario_id)
+      FROM registros_ponto
+      WHERE DATE(horario AT TIME ZONE 'America/Sao_Paulo') = CURRENT_DATE
+    `)
+
+    const entradasHoje = await pool.query(`
+      SELECT COUNT(*) FROM registros_ponto
+      WHERE tipo = 'entrada'
+      AND DATE(horario AT TIME ZONE 'America/Sao_Paulo') = CURRENT_DATE
+    `)
+
+    const saidasHoje = await pool.query(`
+      SELECT COUNT(*) FROM registros_ponto
+      WHERE tipo = 'saida'
+      AND DATE(horario AT TIME ZONE 'America/Sao_Paulo') = CURRENT_DATE
+    `)
+
+    const ultimosRegistros = await pool.query(`
+      SELECT r.*, f.nome, f.email
+      FROM registros_ponto r
+      JOIN funcionarios f ON f.id = r.funcionario_id
+      ORDER BY r.horario DESC
+      LIMIT 10
+    `)
+
+    const presentesAgora = await pool.query(`
+      SELECT DISTINCT ON (funcionario_id)
+        r.funcionario_id, r.tipo, r.horario, f.nome, f.email
+      FROM registros_ponto r
+      JOIN funcionarios f ON f.id = r.funcionario_id
+      WHERE DATE(r.horario AT TIME ZONE 'America/Sao_Paulo') = CURRENT_DATE
+      ORDER BY funcionario_id, horario DESC
+    `)
+
+    res.json({
+      total_registros: parseInt(totalRegistros.rows[0].count),
+      funcionarios_hoje: parseInt(funcionariosHoje.rows[0].count),
+      entradas_hoje: parseInt(entradasHoje.rows[0].count),
+      saidas_hoje: parseInt(saidasHoje.rows[0].count),
+      ultimos_registros: ultimosRegistros.rows,
+      presentes_agora: presentesAgora.rows.filter(r => r.tipo === 'entrada')
+    })
+  } catch (erro) {
+    res.status(500).json({ erro: erro.message })
+  }
+})
+
 const PORT = 3002
 app.listen(PORT, () => {
   console.log(`Ponto Service rodando na porta ${PORT}`)
