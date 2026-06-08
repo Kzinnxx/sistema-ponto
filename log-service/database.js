@@ -6,7 +6,31 @@ const pool = new Pool({
   user: 'admin',
   password: 'senha123',
   database: 'sistema_ponto',
+  max: 10,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
 })
+
+pool.on('error', (err) => {
+  console.error('Erro inesperado no pool do PostgreSQL:', err.message)
+})
+
+const tentarConectar = async (tentativas = 5) => {
+  for (let i = 1; i <= tentativas; i++) {
+    try {
+      await pool.query('SELECT 1')
+      console.log('Conexão com PostgreSQL estabelecida!')
+      return true
+    } catch (erro) {
+      console.error(`Tentativa ${i}/${tentativas} falhou: ${erro.message}`)
+      if (i < tentativas) {
+        await new Promise(res => setTimeout(res, 3000))
+      }
+    }
+  }
+  console.error('Não foi possível conectar ao PostgreSQL após várias tentativas.')
+  return false
+}
 
 const criarTabelas = async () => {
   try {
@@ -26,6 +50,8 @@ const criarTabelas = async () => {
   }
 }
 
-criarTabelas()
+tentarConectar().then(ok => {
+  if (ok) criarTabelas()
+})
 
 module.exports = pool
