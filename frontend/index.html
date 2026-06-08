@@ -119,11 +119,15 @@
         </div>
 
         <div style="margin-top:32px; width:100%;">
-          <button class="btn-principal" id="btn-biometria" onclick="executarBiometria()">
-            👆 Verificar com Biometria
-          </button>
-          <div class="mensagem" id="msg-biometria"></div>
-        </div>
+  <button class="btn-principal" id="btn-biometria" onclick="executarBiometria()">
+    👆 Verificar com Biometria
+  </button>
+  <div class="mensagem" id="msg-biometria"></div>
+  <div class="ou">ou</div>
+  <button class="btn-secundario" onclick="pularBiometria()">
+    Pular verificação biométrica
+  </button>
+</div>
 
         <p style="margin-top:24px; font-size:13px; color:#8a7f72;">
           Sua digital ou rosto nunca sai do dispositivo
@@ -206,7 +210,7 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/@simplewebauthn/browser@7.4.0/dist/bundle/index.umd.min.js"></script>
+  <script src="https://unpkg.com/@simplewebauthn/browser@13.1.0/dist/bundle/index.umd.min.js"></script>
 
   <script>
     const { startRegistration, startAuthentication } = SimpleWebAuthnBrowser
@@ -268,6 +272,15 @@
       document.getElementById('msg-biometria').style.display = 'none'
       mostrarTela('tela-biometria')
     }
+
+      function pularBiometria() {
+  if (modoBiometria === 'cadastro') {
+    mostrarTela('tela-auth')
+    trocarAba('login')
+  } else {
+    irParaPonto(funcionarioAtual.nome)
+  }
+}
 
     function irParaPonto(nome) {
       document.getElementById('nome-usuario').textContent = nome
@@ -346,7 +359,8 @@
             body: JSON.stringify({ funcionario_id: funcionarioAtual.id })
           })
           const opcoes = await opcoesResposta.json()
-          const respostaBio = await startRegistration(opcoes)
+          console.log('Opcoes recebidas:', JSON.stringify(opcoes))
+          const respostaBio = await startRegistration({ optionsJSON: opcoes })
           const verificacao = await fetch('http://localhost:3001/auth/webauthn/cadastro-verificar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -373,7 +387,7 @@
             body: JSON.stringify({ funcionario_id: funcionarioAtual.id })
           })
           const opcoes = await opcoesResposta.json()
-          const respostaBio = await startAuthentication(opcoes)
+          const respostaBio = await startAuthentication({ optionsJSON: opcoes })
           const verificacao = await fetch('http://localhost:3001/auth/webauthn/login-verificar', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

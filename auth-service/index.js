@@ -78,6 +78,7 @@ app.post('/auth/login', async (req, res) => {
 // WebAuthn — gerar opções de cadastro biométrico
 app.post('/auth/webauthn/cadastro-opcoes', async (req, res) => {
   const { funcionario_id } = req.body
+  console.log('cadastro-opcoes chamado para funcionario_id:', funcionario_id)
   try {
     const resultado = await pool.query(
       'SELECT * FROM funcionarios WHERE id = $1',
@@ -87,8 +88,10 @@ app.post('/auth/webauthn/cadastro-opcoes', async (req, res) => {
       return res.status(404).json({ erro: 'Funcionário não encontrado' })
     }
     const opcoes = await gerarOpcoesCadastro(resultado.rows[0])
+    console.log('opcoes geradas com sucesso')
     res.json(opcoes)
   } catch (erro) {
+    console.error('Erro em cadastro-opcoes:', erro)
     res.status(500).json({ erro: erro.message })
   }
 })
