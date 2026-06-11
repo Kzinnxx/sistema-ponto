@@ -110,25 +110,21 @@
 
       <div class="painel-direito" style="align-items:center; text-align:center;">
         <div class="idioma">🌐 Português</div>
-
         <div style="font-size:72px; margin-bottom:24px;">👆</div>
-
         <div class="form-titulo">
           <h2 id="bio-titulo">Confirme sua identidade</h2>
           <p id="bio-subtitulo">Use a biometria do seu dispositivo para continuar</p>
         </div>
-
         <div style="margin-top:32px; width:100%;">
-  <button class="btn-principal" id="btn-biometria" onclick="executarBiometria()">
-    👆 Verificar com Biometria
-  </button>
-  <div class="mensagem" id="msg-biometria"></div>
-  <div class="ou">ou</div>
-  <button class="btn-secundario" onclick="pularBiometria()">
-    Pular verificação biométrica
-  </button>
-</div>
-
+          <button class="btn-principal" id="btn-biometria" onclick="executarBiometria()">
+            👆 Verificar com Biometria
+          </button>
+          <div class="mensagem" id="msg-biometria"></div>
+          <div class="ou">ou</div>
+          <button class="btn-secundario" onclick="pularBiometria()">
+            Pular verificação biométrica
+          </button>
+        </div>
         <p style="margin-top:24px; font-size:13px; color:#8a7f72;">
           Sua digital ou rosto nunca sai do dispositivo
         </p>
@@ -214,6 +210,11 @@
 
   <script>
     const { startRegistration, startAuthentication } = SimpleWebAuthnBrowser
+    const API = 'https://serpent-rink-effective.ngrok-free.dev/api'
+    const HEADERS = {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    }
 
     let tokenAtual = null
     let funcionarioAtual = null
@@ -273,14 +274,14 @@
       mostrarTela('tela-biometria')
     }
 
-      function pularBiometria() {
-  if (modoBiometria === 'cadastro') {
-    mostrarTela('tela-auth')
-    trocarAba('login')
-  } else {
-    irParaPonto(funcionarioAtual.nome)
-  }
-}
+    function pularBiometria() {
+      if (modoBiometria === 'cadastro') {
+        mostrarTela('tela-auth')
+        trocarAba('login')
+      } else {
+        irParaPonto(funcionarioAtual.nome)
+      }
+    }
 
     function irParaPonto(nome) {
       document.getElementById('nome-usuario').textContent = nome
@@ -306,9 +307,9 @@
         return
       }
       try {
-        const resposta = await fetch('http://localhost:3001/auth/cadastro', {
+        const resposta = await fetch(`${API}/auth/cadastro`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: HEADERS,
           body: JSON.stringify({ nome, email, senha })
         })
         const dados = await resposta.json()
@@ -331,9 +332,9 @@
         return
       }
       try {
-        const resposta = await fetch('http://localhost:3001/auth/login', {
+        const resposta = await fetch(`${API}/auth/login`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: HEADERS,
           body: JSON.stringify({ email, senha })
         })
         const dados = await resposta.json()
@@ -353,48 +354,39 @@
       try {
         if (modoBiometria === 'cadastro') {
           mostrar('msg-biometria', '⏳ Preparando cadastro biométrico...', 'info')
-          const opcoesResposta = await fetch('http://localhost:3001/auth/webauthn/cadastro-opcoes', {
+          const opcoesResposta = await fetch(`${API}/webauthn/cadastro-opcoes`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: HEADERS,
             body: JSON.stringify({ funcionario_id: funcionarioAtual.id })
           })
           const opcoes = await opcoesResposta.json()
-          console.log('Opcoes recebidas:', JSON.stringify(opcoes))
-          const respostaBio = await startRegistration({ optionsJSON: opcoes })
-          const verificacao = await fetch('http://localhost:3001/auth/webauthn/cadastro-verificar', {
+          const respostaBio = await startRegistration(opcoes)
+          const verificacao = await fetch(`${API}/webauthn/cadastro-verificar`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              funcionario_id: funcionarioAtual.id,
-              resposta: respostaBio
-            })
+            headers: HEADERS,
+            body: JSON.stringify({ funcionario_id: funcionarioAtual.id, resposta: respostaBio })
           })
           const resultado = await verificacao.json()
           if (resultado.erro) {
             mostrar('msg-biometria', '❌ ' + resultado.erro, 'erro')
           } else {
             mostrar('msg-biometria', '✅ Biometria cadastrada! Redirecionando para o login...', 'sucesso')
-            setTimeout(() => {
-              mostrarTela('tela-auth')
-              trocarAba('login')
-            }, 2000)
+            setTimeout(() => { mostrarTela('tela-auth'); trocarAba('login') }, 2000)
           }
         } else {
           mostrar('msg-biometria', '⏳ Verificando biometria...', 'info')
-          const opcoesResposta = await fetch('http://localhost:3001/auth/webauthn/login-opcoes', {
+          const opcoesResposta = await fetch(`${API}/webauthn/login-opcoes`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: HEADERS,
             body: JSON.stringify({ funcionario_id: funcionarioAtual.id })
           })
           const opcoes = await opcoesResposta.json()
-          const respostaBio = await startAuthentication({ optionsJSON: opcoes })
-          const verificacao = await fetch('http://localhost:3001/auth/webauthn/login-verificar', {
+          console.log('Opcoes:', JSON.stringify(opcoes))
+          const respostaBio = await startRegistration(opcoes)
+          const verificacao = await fetch(`${API}/webauthn/login-verificar`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              funcionario_id: funcionarioAtual.id,
-              resposta: respostaBio
-            })
+            headers: HEADERS,
+            body: JSON.stringify({ funcionario_id: funcionarioAtual.id, resposta: respostaBio })
           })
           const resultado = await verificacao.json()
           if (resultado.erro) {
@@ -413,12 +405,9 @@
 
     async function registrarPonto(tipo) {
       try {
-        const resposta = await fetch('http://localhost:3002/ponto/registrar', {
+        const resposta = await fetch(`${API}/ponto/registrar`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + tokenAtual
-          },
+          headers: { ...HEADERS, 'Authorization': 'Bearer ' + tokenAtual },
           body: JSON.stringify({ tipo })
         })
         const dados = await resposta.json()
@@ -437,8 +426,8 @@
 
     async function verHistorico() {
       try {
-        const resposta = await fetch('http://localhost:3002/ponto/historico', {
-          headers: { 'Authorization': 'Bearer ' + tokenAtual }
+        const resposta = await fetch(`${API}/ponto/historico`, {
+          headers: { ...HEADERS, 'Authorization': 'Bearer ' + tokenAtual }
         })
         const dados = await resposta.json()
         const el = document.getElementById('lista-historico')
@@ -470,4 +459,4 @@
     }
   </script>
 </body>
-</html>
+</html> 

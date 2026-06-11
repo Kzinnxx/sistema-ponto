@@ -121,17 +121,22 @@ app.post('/auth/login', async (req, res) => {
 
 app.post('/auth/webauthn/cadastro-opcoes', async (req, res) => {
   const { funcionario_id } = req.body
+  console.log('cadastro-opcoes chamado para funcionario_id:', funcionario_id)
   try {
     const resultado = await pool.query(
       'SELECT * FROM funcionarios WHERE id = $1',
       [funcionario_id]
     )
     if (resultado.rows.length === 0) {
+      console.log('Funcionario nao encontrado')
       return res.status(404).json({ erro: 'Funcionário não encontrado' })
     }
+    console.log('Funcionario encontrado:', resultado.rows[0].email)
     const opcoes = await gerarOpcoesCadastro(resultado.rows[0])
+    console.log('Opcoes geradas com sucesso')
     res.json(opcoes)
   } catch (erro) {
+    console.error('Erro em cadastro-opcoes:', erro)
     enviarLog('erro', `Erro ao gerar opcoes WebAuthn: ${erro.message}`)
     res.status(500).json({ erro: erro.message })
   }
@@ -149,6 +154,7 @@ app.post('/auth/webauthn/cadastro-verificar', async (req, res) => {
       res.status(400).json({ erro: 'Falha ao cadastrar biometria' })
     }
   } catch (erro) {
+    console.error('Erro em cadastro-verificar:', erro)
     enviarLog('erro', `Erro ao verificar cadastro biometrico: ${erro.message}`)
     res.status(500).json({ erro: erro.message })
   }
@@ -167,6 +173,7 @@ app.post('/auth/webauthn/login-opcoes', async (req, res) => {
     const opcoes = await gerarOpcoesAutenticacao(resultado.rows[0])
     res.json(opcoes)
   } catch (erro) {
+    console.error('Erro em login-opcoes:', erro)
     enviarLog('erro', `Erro ao gerar opcoes de autenticacao: ${erro.message}`)
     res.status(500).json({ erro: erro.message })
   }
@@ -202,6 +209,7 @@ app.post('/auth/webauthn/login-verificar', async (req, res) => {
       res.status(401).json({ erro: 'Falha na verificação biométrica' })
     }
   } catch (erro) {
+    console.error('Erro em login-verificar:', erro)
     enviarLog('erro', `Erro ao verificar autenticacao biometrica: ${erro.message}`)
     res.status(500).json({ erro: erro.message })
   }

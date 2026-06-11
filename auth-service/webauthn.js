@@ -8,14 +8,14 @@ const {
 const pool = require('./database')
 
 const RP_NAME = 'PointSys Tecnologia'
-const RP_ID = 'localhost'
-const ORIGIN = 'http://localhost:5500'
+const RP_ID = 'serpent-rink-effective.ngrok-free.dev'
+const ORIGIN = 'https://serpent-rink-effective.ngrok-free.dev'
 
 const gerarOpcoesCadastro = async (funcionario) => {
   const opcoes = await generateRegistrationOptions({
     rpName: RP_NAME,
     rpID: RP_ID,
-    userID: String(funcionario.id),
+    userID: new TextEncoder().encode(String(funcionario.id)),
     userName: funcionario.email,
     userDisplayName: funcionario.nome,
     attestationType: 'none',
@@ -82,14 +82,13 @@ const gerarOpcoesAutenticacao = async (funcionario) => {
     [funcionario.id]
   )
 
+  console.log('Credenciais encontradas:', credenciais.rows)
+
   const opcoes = await generateAuthenticationOptions({
-    rpID: RP_ID,
-    userVerification: 'preferred',
-    allowCredentials: credenciais.rows.map(c => ({
-      id: c.credential_id,
-      type: 'public-key',
-    })),
-  })
+  rpID: RP_ID,
+  userVerification: 'preferred',
+  allowCredentials: [],
+})
 
   await pool.query(
     `INSERT INTO desafios_webauthn (funcionario_id, desafio)
@@ -123,6 +122,9 @@ const verificarAutenticacao = async (funcionario_id, resposta) => {
 
   const cred = credencial.rows[0]
 
+  console.log('Credencial encontrada:', cred.credential_id)
+  console.log('Resposta recebida id:', resposta.id)
+
   const verificacao = await verifyAuthenticationResponse({
     response: resposta,
     expectedChallenge: desafioEsperado,
@@ -140,7 +142,6 @@ const verificarAutenticacao = async (funcionario_id, resposta) => {
       'UPDATE credenciais_biometricas SET counter = $1 WHERE funcionario_id = $2',
       [verificacao.authenticationInfo.newCounter, funcionario_id]
     )
-
     await pool.query(
       'DELETE FROM desafios_webauthn WHERE funcionario_id = $1',
       [funcionario_id]

@@ -13,7 +13,6 @@
       justify-content: space-between;
       align-items: center;
     }
-
     .topo-nav-marca {
       display: flex;
       align-items: center;
@@ -22,7 +21,6 @@
       font-weight: 700;
       font-size: 16px;
     }
-
     .topo-nav-links a {
       color: #a8bdd4;
       text-decoration: none;
@@ -31,35 +29,17 @@
       margin-left: 20px;
       transition: color 0.2s;
     }
-
     .topo-nav-links a:hover { color: #fff; }
     .topo-nav-links a.ativo { color: #c9a84c; }
-
-    .logs-wrapper {
-      padding: 40px 48px;
-      min-height: 100vh;
-      background: #f0ebe0;
-    }
-
+    .logs-wrapper { padding: 40px 48px; min-height: 100vh; background: #f0ebe0; }
     .logs-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 28px;
     }
-
-    .logs-header h1 {
-      font-size: 22px;
-      color: #0a2342;
-      font-weight: 700;
-    }
-
-    .logs-header p {
-      font-size: 13px;
-      color: #8a7f72;
-      margin-top: 4px;
-    }
-
+    .logs-header h1 { font-size: 22px; color: #0a2342; font-weight: 700; }
+    .logs-header p { font-size: 13px; color: #8a7f72; margin-top: 4px; }
     .btn-atualizar-logs {
       padding: 10px 20px;
       background: #0a2342;
@@ -71,16 +51,13 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-
     .btn-atualizar-logs:hover { background: #0d2e57; }
-
     .tabela-wrapper {
       background: #fff;
       border-radius: 14px;
       border: 1.5px solid #f0ebe0;
       overflow: hidden;
     }
-
     .tabela-header {
       display: grid;
       grid-template-columns: 1fr 1fr 120px 120px 160px;
@@ -93,7 +70,6 @@
       letter-spacing: 0.8px;
       border-bottom: 1.5px solid #f0ebe0;
     }
-
     .log-item {
       display: grid;
       grid-template-columns: 1fr 1fr 120px 120px 160px;
@@ -103,13 +79,10 @@
       align-items: center;
       transition: background 0.15s;
     }
-
     .log-item:hover { background: #fdfcfa; }
     .log-item:last-child { border-bottom: none; }
-
     .nome { font-weight: 600; color: #0a2342; }
     .email { color: #8a7f72; font-size: 12px; }
-
     .badge {
       padding: 4px 12px;
       border-radius: 20px;
@@ -118,23 +91,14 @@
       display: inline-block;
       text-align: center;
     }
-
     .badge-entrada { background: #eaf4ee; color: #1e6b3a; }
     .badge-saida { background: #fdf0ee; color: #9b2c1a; }
     .badge-login { background: #eef4fb; color: #1a4a7a; }
     .badge-bio-sim { background: #f0eef8; color: #4a2a8a; }
     .badge-bio-nao { background: #f5f0e8; color: #8a7f72; }
-
     .hora { color: #0a2342; font-weight: 500; }
     .data { color: #8a7f72; font-size: 12px; margin-top: 2px; }
-
-    .vazio {
-      padding: 48px;
-      text-align: center;
-      color: #8a7f72;
-      font-size: 14px;
-    }
-
+    .vazio { padding: 48px; text-align: center; color: #8a7f72; font-size: 14px; }
     .rodape {
       background: #f0ebe0;
       border-top: 1px solid #e0d9ce;
@@ -144,7 +108,6 @@
       font-size: 12px;
       color: #8a7f72;
     }
-
     @media (max-width: 700px) {
       .logs-wrapper { padding: 20px 16px; }
       .tabela-header { display: none; }
@@ -157,11 +120,10 @@
 <body style="margin:0; font-family:'Segoe UI', Arial, sans-serif; background:#f0ebe0;">
 
   <nav class="topo-nav">
-    <div class="topo-nav-marca">
-      ⏱️ POINTSYS Tecnologia
-    </div>
+    <div class="topo-nav-marca">⏱️ POINTSYS Tecnologia</div>
     <div class="topo-nav-links">
       <a href="index.html">🏠 Portal</a>
+      <a href="dashboard.html">📊 Dashboard</a>
       <a href="logs.html" class="ativo">📋 Logs</a>
     </div>
   </nav>
@@ -195,11 +157,17 @@
   </div>
 
   <script>
+    const API = 'https://serpent-rink-effective.ngrok-free.dev/api'
+    const HEADERS = {
+      'Content-Type': 'application/json',
+      'ngrok-skip-browser-warning': 'true'
+    }
+
     async function carregarLogs() {
       try {
         const [resLogs, resFuncionarios] = await Promise.all([
-          fetch('http://localhost:3003/logs'),
-          fetch('http://localhost:3001/auth/funcionarios')
+          fetch(`${API}/logs`, { headers: HEADERS }),
+          fetch(`${API}/auth/funcionarios`, { headers: HEADERS })
         ])
 
         const dadosLogs = await resLogs.json()
