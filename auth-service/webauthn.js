@@ -87,7 +87,7 @@ const gerarOpcoesAutenticacao = async (funcionario) => {
   const opcoes = await generateAuthenticationOptions({
   rpID: RP_ID,
   userVerification: 'preferred',
-  allowCredentials: [],
+  allowCredentials: credenciais.rows.map(c => ({ id: c.credential_id })),
 })
 
   await pool.query(

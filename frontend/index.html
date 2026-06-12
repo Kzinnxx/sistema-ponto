@@ -382,7 +382,7 @@
           })
           const opcoes = await opcoesResposta.json()
           console.log('Opcoes:', JSON.stringify(opcoes))
-          const respostaBio = await startRegistration(opcoes)
+          const respostaBio = await startAuthentication(opcoes)
           const verificacao = await fetch(`${API}/webauthn/login-verificar`, {
             method: 'POST',
             headers: HEADERS,
