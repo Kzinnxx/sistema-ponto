@@ -15,7 +15,7 @@ pool.on('error', (err) => {
   console.error('Erro inesperado no pool do PostgreSQL:', err.message)
 })
 
-const tentarConectar = async (tentativas = 5) => {
+const tentarConectar = async (tentativas = 1000) => {
   for (let i = 1; i <= tentativas; i++) {
     try {
       await pool.query('SELECT 1')
