@@ -432,7 +432,7 @@ Forwarding  https://xxxx.ngrok-free.dev -> http://localhost:3000
 | **Microsserviços**        | Auth, Ponto e Log Service são processos independentes               |
 | **Mensageria**            | RabbitMQ com filas `fila_ponto` e `fila_logs`                       |
 | **Processamento assíncrono** | Worker consome a fila sem bloquear o usuário                     |
-| **Tolerância a falhas**   | Retry automático (5 tentativas no banco, infinito no RabbitMQ)      |
+| **Tolerância a falhas**   | Retry automático (1000 tentativas no banco, infinito no RabbitMQ)      |
 | **Fila persistente**      | Mensagens sobrevivem a reinicializações do broker                   |
 | **API Gateway**           | Ponto único de entrada que distribui requisições entre serviços      |
 | **Containerização**       | Docker Compose sobe toda a infraestrutura com um único comando       |
@@ -446,11 +446,15 @@ Forwarding  https://xxxx.ngrok-free.dev -> http://localhost:3000
 
 ### Equipe
 
-César Felipe Martins Ferreira | RA: 12824223246
-Guilherme Medeiros Fonseca Dantas | RA: 12825141790
-Kawan Lima da Silva | RA: 12825142906
-Nathálya Árillys Oliveira Queiroz | RA: 12825138555
-Pedro Henrique de Paiva Araújo | RA: 12825137112
+1. César Felipe Martins Ferreira | RA: 12824223246
+
+2 .Guilherme Medeiros Fonseca Dantas | RA: 12825141790
+
+3. Kawan Lima da Silva | RA: 12825142906
+
+4. Nathálya Árillys Oliveira Queiroz | RA: 12825138555
+
+5. Pedro Henrique de Paiva Araújo | RA: 12825137112
 
 
 
