@@ -60,7 +60,7 @@
     }
     .tabela-header {
       display: grid;
-      grid-template-columns: 1fr 1fr 120px 120px 160px;
+      grid-template-columns: 1fr 1fr 130px 130px 160px;
       padding: 12px 20px;
       background: #f5f0e8;
       font-size: 11px;
@@ -72,7 +72,7 @@
     }
     .log-item {
       display: grid;
-      grid-template-columns: 1fr 1fr 120px 120px 160px;
+      grid-template-columns: 1fr 1fr 130px 130px 160px;
       padding: 14px 20px;
       border-bottom: 1px solid #f5f0e8;
       font-size: 13px;
@@ -94,8 +94,7 @@
     .badge-entrada { background: #eaf4ee; color: #1e6b3a; }
     .badge-saida { background: #fdf0ee; color: #9b2c1a; }
     .badge-login { background: #eef4fb; color: #1a4a7a; }
-    .badge-bio-sim { background: #f0eef8; color: #4a2a8a; }
-    .badge-bio-nao { background: #f5f0e8; color: #8a7f72; }
+    .badge-cadastro { background: #f5f0e8; color: #4a4035; }
     .hora { color: #0a2342; font-weight: 500; }
     .data { color: #8a7f72; font-size: 12px; margin-top: 2px; }
     .vazio { padding: 48px; text-align: center; color: #8a7f72; font-size: 14px; }
@@ -132,7 +131,7 @@
     <div class="logs-header">
       <div>
         <h1>📋 Registros do Sistema</h1>
-        <p>Histórico de logins, pontos e biometria</p>
+        <p>Histórico de cadastros, logins e registros de ponto</p>
       </div>
       <button class="btn-atualizar-logs" onclick="carregarLogs()">🔄 Atualizar</button>
     </div>
@@ -140,9 +139,9 @@
     <div class="tabela-wrapper">
       <div class="tabela-header">
         <span>Funcionário</span>
-        <span>Email</span>
+        <span>E-mail</span>
+        <span>Ação</span>
         <span>Tipo</span>
-        <span>Biometria</span>
         <span>Horário</span>
       </div>
       <div id="lista-logs">
@@ -180,60 +179,72 @@
           })
         }
 
-        const logs = dadosLogs.logs
+        // Filtra apenas logs relevantes — sem biometria
+        const logsRelevantes = dadosLogs.logs.filter(log =>
+          log.mensagem.includes('Login realizado') ||
+          log.mensagem.includes('Funcionário cadastrado') ||
+          log.mensagem.includes('Ponto registrado') ||
+          log.mensagem.includes('Tentativa de login') ||
+          log.mensagem.includes('Senha incorreta') ||
+          log.mensagem.includes('email duplicado')
+        )
+
         const el = document.getElementById('lista-logs')
 
-        if (logs.length === 0) {
+        if (logsRelevantes.length === 0) {
           el.innerHTML = '<div class="vazio">Nenhum registro encontrado.</div>'
           return
         }
 
-        el.innerHTML = logs.map(log => {
+        el.innerHTML = logsRelevantes.map(log => {
           const dados = log.dados || {}
           const funcionarioId = dados.id || dados.funcionario_id
           const funcionario = mapFuncionarios[funcionarioId] || {}
-          const nome = funcionario.nome || '—'
-          const email = funcionario.email || dados.email || '—'
+          const nome = dados.nome || funcionario.nome || '—'
+          const email = dados.email || funcionario.email || '—'
 
           const d = new Date(log.criado_em)
           d.setHours(d.getHours() - 3)
           const hora = d.toLocaleTimeString('pt-br')
           const data = d.toLocaleDateString('pt-br')
 
+          let acaoBadge = ''
+          let acaoTexto = ''
           let tipoBadge = ''
           let tipoTexto = ''
 
-          if (log.mensagem.includes('entrada')) {
+          if (log.mensagem.includes('cadastrado')) {
+            acaoBadge = 'badge-cadastro'
+            acaoTexto = '👤 Cadastro'
+            tipoBadge = 'badge-cadastro'
+            tipoTexto = '—'
+          } else if (log.mensagem.includes('Login realizado')) {
+            acaoBadge = 'badge-login'
+            acaoTexto = '🔐 Login'
+            tipoBadge = 'badge-login'
+            tipoTexto = 'Sucesso'
+          } else if (log.mensagem.includes('Tentativa') || log.mensagem.includes('Senha incorreta')) {
+            acaoBadge = 'badge-saida'
+            acaoTexto = '⚠️ Login'
+            tipoBadge = 'badge-saida'
+            tipoTexto = 'Falha'
+          } else if (log.mensagem.includes('entrada')) {
+            acaoBadge = 'badge-entrada'
+            acaoTexto = '⏱️ Ponto'
             tipoBadge = 'badge-entrada'
             tipoTexto = '✅ Entrada'
           } else if (log.mensagem.includes('saida') || log.mensagem.includes('saída')) {
+            acaoBadge = 'badge-saida'
+            acaoTexto = '⏱️ Ponto'
             tipoBadge = 'badge-saida'
             tipoTexto = '🚪 Saída'
-          } else if (log.mensagem.includes('Login') || log.mensagem.includes('login')) {
-            tipoBadge = 'badge-login'
-            tipoTexto = '🔐 Login'
-          } else if (log.mensagem.includes('Biometria cadastrada')) {
-            tipoBadge = 'badge-bio-sim'
-            tipoTexto = '👆 Cadastro'
-          } else {
-            tipoBadge = 'badge-login'
-            tipoTexto = '📌 Evento'
-          }
-
-          let biometriaBadge = ''
-          if (log.mensagem.includes('biometrico') || log.mensagem.includes('Biometria cadastrada')) {
-            biometriaBadge = '<span class="badge badge-bio-sim">👆 Sim</span>'
-          } else if (log.mensagem.includes('Login') || log.mensagem.includes('entrada') || log.mensagem.includes('saida')) {
-            biometriaBadge = '<span class="badge badge-bio-nao">— Pulou</span>'
-          } else {
-            biometriaBadge = '<span style="color:#8a7f72;font-size:12px;">—</span>'
           }
 
           return `<div class="log-item">
             <span class="nome">${nome}</span>
             <span class="email">${email}</span>
+            <span><span class="badge ${acaoBadge}">${acaoTexto}</span></span>
             <span><span class="badge ${tipoBadge}">${tipoTexto}</span></span>
-            <span>${biometriaBadge}</span>
             <div>
               <div class="hora">${hora}</div>
               <div class="data">${data}</div>
@@ -242,7 +253,8 @@
         }).join('')
 
       } catch (erro) {
-        document.getElementById('lista-logs').innerHTML = '<div class="vazio">❌ Erro ao conectar com o servidor.</div>'
+        document.getElementById('lista-logs').innerHTML =
+          '<div class="vazio">❌ Erro ao conectar com o servidor.</div>'
       }
     }
 

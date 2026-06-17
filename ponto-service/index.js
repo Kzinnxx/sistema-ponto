@@ -54,9 +54,7 @@ const enviarLog = (tipo, mensagem, dados = {}) => {
 
 const verificarToken = (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1]
-  if (!token) {
-    return res.status(401).json({ erro: 'Token não fornecido' })
-  }
+  if (!token) return res.status(401).json({ erro: 'Token não fornecido' })
   try {
     const decoded = jwt.verify(token, 'segredo_super_secreto_123')
     req.funcionario = decoded
@@ -71,7 +69,7 @@ app.get('/health', (req, res) => {
 })
 
 app.post('/ponto/registrar', verificarToken, async (req, res) => {
-  const { tipo, latitude, longitude } = req.body
+  const { tipo } = req.body
 
   if (!['entrada', 'saida'].includes(tipo)) {
     return res.status(400).json({ erro: 'Tipo deve ser entrada ou saida' })
@@ -80,8 +78,8 @@ app.post('/ponto/registrar', verificarToken, async (req, res) => {
   const registro = {
     funcionario_id: req.funcionario.id,
     tipo,
-    latitude: latitude || null,
-    longitude: longitude || null,
+    latitude: null,
+    longitude: null,
     horario: new Date()
   }
 
@@ -92,7 +90,10 @@ app.post('/ponto/registrar', verificarToken, async (req, res) => {
         Buffer.from(JSON.stringify(registro)),
         { persistent: true }
       )
-      enviarLog('info', `Ponto registrado: ${tipo} para funcionario_id: ${req.funcionario.id}`, registro)
+      enviarLog('info',
+        `Ponto registrado: ${tipo} para funcionario_id: ${req.funcionario.id}`,
+        { ...registro, nome: req.funcionario.nome, email: req.funcionario.email }
+      )
       res.json({ mensagem: 'Ponto registrado na fila com sucesso!', registro })
     } else {
       enviarLog('erro', 'Fila de ponto não disponível')
@@ -122,28 +123,43 @@ app.get('/dashboard/resumo', async (req, res) => {
   try {
     const pool = require('./database')
 
+    // Total de registros de todos os tempos
     const totalRegistros = await pool.query(
       'SELECT COUNT(*) FROM registros_ponto'
     )
 
-    const funcionariosHoje = await pool.query(`
-      SELECT COUNT(DISTINCT funcionario_id)
-      FROM registros_ponto
-      WHERE DATE(horario AT TIME ZONE 'America/Sao_Paulo') = CURRENT_DATE
-    `)
-
+    // Entradas hoje
     const entradasHoje = await pool.query(`
       SELECT COUNT(*) FROM registros_ponto
       WHERE tipo = 'entrada'
-      AND DATE(horario AT TIME ZONE 'America/Sao_Paulo') = CURRENT_DATE
+      AND horario::date = (NOW() - INTERVAL '3 hours')::date
     `)
 
+    // Saídas hoje
     const saidasHoje = await pool.query(`
       SELECT COUNT(*) FROM registros_ponto
       WHERE tipo = 'saida'
-      AND DATE(horario AT TIME ZONE 'America/Sao_Paulo') = CURRENT_DATE
+      AND horario::date = (NOW() - INTERVAL '3 hours')::date
     `)
 
+    // Último registro de cada funcionário hoje
+    const ultimosPorFuncionario = await pool.query(`
+      SELECT DISTINCT ON (r.funcionario_id)
+        r.funcionario_id,
+        r.tipo,
+        r.horario,
+        f.nome,
+        f.email
+      FROM registros_ponto r
+      JOIN funcionarios f ON f.id = r.funcionario_id
+      WHERE r.horario::date = (NOW() - INTERVAL '3 hours')::date
+      ORDER BY r.funcionario_id, r.horario DESC
+    `)
+
+    // Presentes = último registro foi entrada
+    const presentesAgora = ultimosPorFuncionario.rows.filter(r => r.tipo === 'entrada')
+
+    // Últimos 10 registros com nome e email
     const ultimosRegistros = await pool.query(`
       SELECT r.*, f.nome, f.email
       FROM registros_ponto r
@@ -152,24 +168,15 @@ app.get('/dashboard/resumo', async (req, res) => {
       LIMIT 10
     `)
 
-    const presentesAgora = await pool.query(`
-      SELECT DISTINCT ON (funcionario_id)
-        r.funcionario_id, r.tipo, r.horario, f.nome, f.email
-      FROM registros_ponto r
-      JOIN funcionarios f ON f.id = r.funcionario_id
-      WHERE DATE(r.horario AT TIME ZONE 'America/Sao_Paulo') = CURRENT_DATE
-      ORDER BY funcionario_id, horario DESC
-    `)
-
     res.json({
       total_registros: parseInt(totalRegistros.rows[0].count),
-      funcionarios_hoje: parseInt(funcionariosHoje.rows[0].count),
       entradas_hoje: parseInt(entradasHoje.rows[0].count),
       saidas_hoje: parseInt(saidasHoje.rows[0].count),
-      ultimos_registros: ultimosRegistros.rows,
-      presentes_agora: presentesAgora.rows.filter(r => r.tipo === 'entrada')
+      presentes_agora: presentesAgora,
+      ultimos_registros: ultimosRegistros.rows
     })
   } catch (erro) {
+    console.error('Erro no dashboard:', erro.message)
     res.status(500).json({ erro: erro.message })
   }
 })

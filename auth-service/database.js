@@ -15,7 +15,7 @@ pool.on('error', (err) => {
   console.error('Erro inesperado no pool do PostgreSQL:', err.message)
 })
 
-const tentarConectar = async (tentativas = 1000) => {
+const tentarConectar = async (tentativas = 5) => {
   for (let i = 1; i <= tentativas; i++) {
     try {
       await pool.query('SELECT 1')
@@ -43,27 +43,6 @@ const criarTabelas = async () => {
         criado_em TIMESTAMP DEFAULT NOW()
       )
     `)
-
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS credenciais_biometricas (
-        id SERIAL PRIMARY KEY,
-        funcionario_id INTEGER REFERENCES funcionarios(id),
-        credential_id TEXT UNIQUE NOT NULL,
-        public_key TEXT NOT NULL,
-        counter BIGINT DEFAULT 0,
-        criado_em TIMESTAMP DEFAULT NOW()
-      )
-    `)
-
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS desafios_webauthn (
-        id SERIAL PRIMARY KEY,
-        funcionario_id INTEGER REFERENCES funcionarios(id),
-        desafio TEXT NOT NULL,
-        criado_em TIMESTAMP DEFAULT NOW()
-      )
-    `)
-
     console.log('Tabelas criadas com sucesso!')
   } catch (erro) {
     console.error('Erro ao criar tabelas:', erro.message)

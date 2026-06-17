@@ -342,10 +342,6 @@ button.btn-sair:hover { background: #f5f0e8; color: #0a2342; }
   align-items: flex-start;
 }
 
-.usuario-info {
-  margin-top: auto;
-}
-
 .usuario-avatar {
   width: 56px;
   height: 56px;
@@ -457,9 +453,8 @@ button.btn-sair:hover { background: #f5f0e8; color: #0a2342; }
 .btn-label { font-size: 15px; }
 .btn-sub { font-size: 11px; font-weight: 400; opacity: 0.7; }
 
-.historico-secao {
-  flex: 1;
-}
+/* ======= HISTÓRICO ======= */
+.historico-secao { flex: 1; }
 
 .historico-header {
   display: flex;
@@ -543,6 +538,7 @@ button.btn-sair:hover { background: #f5f0e8; color: #0a2342; }
   font-weight: 500;
 }
 
+/* ======= RESPONSIVO ======= */
 @media (max-width: 700px) {
   .painel-esquerdo { display: none; }
   .painel-direito { padding: 40px 28px; }

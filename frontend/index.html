@@ -89,54 +89,6 @@
     </div>
   </div>
 
-  <!-- TELA BIOMETRIA -->
-  <div class="tela" id="tela-biometria">
-    <div class="auth-wrapper">
-      <div class="painel-esquerdo">
-        <div class="marca">
-          <div class="marca-icone">⏱️</div>
-          <div class="marca-texto">
-            <h1>POINTSYS</h1>
-            <p>Tecnologia</p>
-          </div>
-        </div>
-        <div class="painel-esquerdo-conteudo">
-          <div class="divisor"></div>
-          <h2>Verificação Biométrica</h2>
-          <p>Confirme sua identidade usando a biometria do seu dispositivo para continuar com segurança.</p>
-        </div>
-        <p style="font-size:11px; color:#4a6a8a;">© 2026 PointSys Tecnologia</p>
-      </div>
-
-      <div class="painel-direito" style="align-items:center; text-align:center;">
-        <div class="idioma">🌐 Português</div>
-        <div style="font-size:72px; margin-bottom:24px;">👆</div>
-        <div class="form-titulo">
-          <h2 id="bio-titulo">Confirme sua identidade</h2>
-          <p id="bio-subtitulo">Use a biometria do seu dispositivo para continuar</p>
-        </div>
-        <div style="margin-top:32px; width:100%;">
-          <button class="btn-principal" id="btn-biometria" onclick="executarBiometria()">
-            👆 Verificar com Biometria
-          </button>
-          <div class="mensagem" id="msg-biometria"></div>
-          <div class="ou">ou</div>
-          <button class="btn-secundario" onclick="pularBiometria()">
-            Pular verificação biométrica
-          </button>
-        </div>
-        <p style="margin-top:24px; font-size:13px; color:#8a7f72;">
-          Sua digital ou rosto nunca sai do dispositivo
-        </p>
-      </div>
-    </div>
-
-    <div class="rodape">
-      <span>🛡️ Sua segurança é importante para nós.</span>
-      <span>© 2026 PointSys Tecnologia. Todos os direitos reservados.</span>
-    </div>
-  </div>
-
   <!-- TELA 2: PONTO -->
   <div class="tela" id="tela-ponto">
     <div class="ponto-wrapper">
@@ -206,10 +158,7 @@
     </div>
   </div>
 
-  <script src="https://unpkg.com/@simplewebauthn/browser@13.1.0/dist/bundle/index.umd.min.js"></script>
-
   <script>
-    const { startRegistration, startAuthentication } = SimpleWebAuthnBrowser
     const API = 'https://serpent-rink-effective.ngrok-free.dev/api'
     const HEADERS = {
       'Content-Type': 'application/json',
@@ -217,12 +166,9 @@
     }
 
     let tokenAtual = null
-    let funcionarioAtual = null
-    let modoBiometria = null
 
     document.getElementById('tela-auth').classList.add('ativa')
     document.getElementById('tela-ponto').classList.remove('ativa')
-    document.getElementById('tela-biometria').classList.remove('ativa')
 
     function atualizarRelogio() {
       const agora = new Date()
@@ -258,31 +204,6 @@
       el.style.display = 'block'
     }
 
-    function irParaBiometria(modo, funcionario) {
-      funcionarioAtual = funcionario
-      modoBiometria = modo
-      if (modo === 'cadastro') {
-        document.getElementById('bio-titulo').textContent = 'Cadastrar Biometria'
-        document.getElementById('bio-subtitulo').textContent = 'Cadastre sua biometria para acessos futuros'
-        document.getElementById('btn-biometria').textContent = '👆 Cadastrar Biometria'
-      } else {
-        document.getElementById('bio-titulo').textContent = 'Confirme sua identidade'
-        document.getElementById('bio-subtitulo').textContent = 'Use a biometria para confirmar seu acesso'
-        document.getElementById('btn-biometria').textContent = '👆 Verificar com Biometria'
-      }
-      document.getElementById('msg-biometria').style.display = 'none'
-      mostrarTela('tela-biometria')
-    }
-
-    function pularBiometria() {
-      if (modoBiometria === 'cadastro') {
-        mostrarTela('tela-auth')
-        trocarAba('login')
-      } else {
-        irParaPonto(funcionarioAtual.nome)
-      }
-    }
-
     function irParaPonto(nome) {
       document.getElementById('nome-usuario').textContent = nome
       mostrarTela('tela-ponto')
@@ -291,7 +212,6 @@
 
     function sair() {
       tokenAtual = null
-      funcionarioAtual = null
       document.getElementById('login-email').value = ''
       document.getElementById('login-senha').value = ''
       mostrarTela('tela-auth')
@@ -316,8 +236,9 @@
         if (dados.erro) {
           mostrar('msg-cadastro', '❌ ' + dados.erro, 'erro')
         } else {
-          mostrar('msg-cadastro', '✅ Conta criada! Cadastrando biometria...', 'sucesso')
-          setTimeout(() => irParaBiometria('cadastro', dados.funcionario), 1500)
+          mostrar('msg-cadastro', '✅ Conta criada! Redirecionando para o login...', 'sucesso')
+          document.getElementById('login-email').value = email
+          setTimeout(() => trocarAba('login'), 1500)
         }
       } catch {
         mostrar('msg-cadastro', '❌ Erro ao conectar com o servidor', 'erro')
@@ -342,64 +263,10 @@
           mostrar('msg-login', '❌ ' + dados.erro, 'erro')
         } else {
           tokenAtual = dados.token
-          irParaBiometria('login', dados.funcionario)
+          irParaPonto(dados.funcionario.nome)
         }
       } catch {
         mostrar('msg-login', '❌ Erro ao conectar com o servidor', 'erro')
-      }
-    }
-
-    async function executarBiometria() {
-      if (!funcionarioAtual) return
-      try {
-        if (modoBiometria === 'cadastro') {
-          mostrar('msg-biometria', '⏳ Preparando cadastro biométrico...', 'info')
-          const opcoesResposta = await fetch(`${API}/webauthn/cadastro-opcoes`, {
-            method: 'POST',
-            headers: HEADERS,
-            body: JSON.stringify({ funcionario_id: funcionarioAtual.id })
-          })
-          const opcoes = await opcoesResposta.json()
-          const respostaBio = await startRegistration(opcoes)
-          const verificacao = await fetch(`${API}/webauthn/cadastro-verificar`, {
-            method: 'POST',
-            headers: HEADERS,
-            body: JSON.stringify({ funcionario_id: funcionarioAtual.id, resposta: respostaBio })
-          })
-          const resultado = await verificacao.json()
-          if (resultado.erro) {
-            mostrar('msg-biometria', '❌ ' + resultado.erro, 'erro')
-          } else {
-            mostrar('msg-biometria', '✅ Biometria cadastrada! Redirecionando para o login...', 'sucesso')
-            setTimeout(() => { mostrarTela('tela-auth'); trocarAba('login') }, 2000)
-          }
-        } else {
-          mostrar('msg-biometria', '⏳ Verificando biometria...', 'info')
-          const opcoesResposta = await fetch(`${API}/webauthn/login-opcoes`, {
-            method: 'POST',
-            headers: HEADERS,
-            body: JSON.stringify({ funcionario_id: funcionarioAtual.id })
-          })
-          const opcoes = await opcoesResposta.json()
-          console.log('Opcoes:', JSON.stringify(opcoes))
-          const respostaBio = await startAuthentication(opcoes)
-          const verificacao = await fetch(`${API}/webauthn/login-verificar`, {
-            method: 'POST',
-            headers: HEADERS,
-            body: JSON.stringify({ funcionario_id: funcionarioAtual.id, resposta: respostaBio })
-          })
-          const resultado = await verificacao.json()
-          if (resultado.erro) {
-            mostrar('msg-biometria', '❌ ' + resultado.erro, 'erro')
-          } else {
-            tokenAtual = resultado.token
-            mostrar('msg-biometria', '✅ Identidade confirmada!', 'sucesso')
-            setTimeout(() => irParaPonto(resultado.funcionario.nome), 1000)
-          }
-        }
-      } catch (erro) {
-        console.error('Erro completo:', erro)
-        mostrar('msg-biometria', '❌ Erro na biometria: ' + erro.message, 'erro')
       }
     }
 
@@ -459,4 +326,4 @@
     }
   </script>
 </body>
-</html> 
+</html>
