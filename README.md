@@ -446,15 +446,15 @@ Forwarding  https://xxxx.ngrok-free.dev -> http://localhost:3000
 
 ### Equipe
 
-1. César Felipe Martins Ferreira | RA: 12824223246
+César Felipe Martins Ferreira | RA: 12824223246
 
-2 .Guilherme Medeiros Fonseca Dantas | RA: 12825141790
+Guilherme Medeiros Fonseca Dantas | RA: 12825141790
 
-3. Kawan Lima da Silva | RA: 12825142906
+Kawan Lima da Silva | RA: 12825142906
 
-4. Nathálya Árillys Oliveira Queiroz | RA: 12825138555
+Nathálya Árillys Oliveira Queiroz | RA: 12825138555
 
-5. Pedro Henrique de Paiva Araújo | RA: 12825137112
+Pedro Henrique de Paiva Araújo | RA: 12825137112
 
 
 
