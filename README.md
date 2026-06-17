@@ -456,6 +456,7 @@ Nathálya Árillys Oliveira Queiroz | RA: 12825138555
 
 Pedro Henrique de Paiva Araújo | RA: 12825137112
 
+---
 
 
 Desenvolvido como projeto acadêmico — Junho de 2026
